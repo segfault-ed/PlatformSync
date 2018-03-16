@@ -229,6 +229,9 @@
                   <li>
                     <a href="#platformsync-pull-api" class="toc-h2 toc-link" data-title="platformsync-pull-api">PlatformSync Pull API</a>
                   </li>
+                  <li>
+                    <a href="#missing-data" class="toc-h2 toc-link" data-title="missing-data">Missing Data</a>
+                  </li>
               </ul>
           </li>
           <li>
@@ -276,6 +279,10 @@
 <p>As its name implies, the Push API will push data into your API via REST endpoints provided by you.  This will enable near-real-time transactional data.</p>
 <h2 id='platformsync-pull-api'>PlatformSync Pull API</h2>
 <p>The Pull API will enable you to connect to our API REST service to query for transactional data.  You will also use this service to get data that was missed from the Push Service</p>
+<h2 id='missing-data'>Missing Data</h2>
+<p>There may be instances where you would expect data to be coming to you, but it is not there.  In <em>most</em> cases, this is due to a data quality alert that halts processing until someone can take action on the alert.  </p>
+
+<p>In other instances, we may have been unable to deliver messages to your endpoints (in the case that you&#39;re using the Push API).  In these instances, you will want to use the Pull API to fill in the missing information.</p>
 <h1 id='push-api'>Push API</h1>
 <p>The Push API will push certain types of transactions to your supplied REST endpoints. We will send the transactions as soon as they occur on the safe and are processed by our system.</p>
 
