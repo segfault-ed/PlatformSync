@@ -201,7 +201,7 @@
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;http&quot;,&quot;curl&quot;]">
+  <body class="index" data-languages="[&quot;json&quot;,&quot;http&quot;,&quot;curl&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -211,6 +211,7 @@
     <div class="toc-wrapper">
       <img src="images/logo.png" class="logo" alt="Logo" />
         <div class="lang-selector">
+              <a href="#" data-language-name="json">json</a>
               <a href="#" data-language-name="http">http</a>
               <a href="#" data-language-name="curl">curl</a>
         </div>
@@ -223,10 +224,36 @@
             <a href="#introduction" class="toc-h1 toc-link" data-title="introduction">Introduction</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#push-api" class="toc-h2 toc-link" data-title="push-api">Push API</a>
+                    <a href="#platformsync-push-api" class="toc-h2 toc-link" data-title="platformsync-push-api">PlatformSync Push API</a>
                   </li>
                   <li>
-                    <a href="#pull-api" class="toc-h2 toc-link" data-title="pull-api">Pull API</a>
+                    <a href="#platformsync-pull-api" class="toc-h2 toc-link" data-title="platformsync-pull-api">PlatformSync Pull API</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#push-api" class="toc-h1 toc-link" data-title="push-api">Push API</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#urls" class="toc-h2 toc-link" data-title="urls">URLs</a>
+                  </li>
+                  <li>
+                    <a href="#security" class="toc-h2 toc-link" data-title="security">Security</a>
+                  </li>
+                  <li>
+                    <a href="#interested-transactions" class="toc-h2 toc-link" data-title="interested-transactions">Interested Transactions</a>
+                  </li>
+                  <li>
+                    <a href="#payload" class="toc-h2 toc-link" data-title="payload">Payload</a>
+                  </li>
+                  <li>
+                    <a href="#failure-notifications" class="toc-h2 toc-link" data-title="failure-notifications">Failure Notifications</a>
+                  </li>
+                  <li>
+                    <a href="#message-expiration" class="toc-h2 toc-link" data-title="message-expiration">Message Expiration</a>
+                  </li>
+                  <li>
+                    <a href="#caveats" class="toc-h2 toc-link" data-title="caveats">Caveats</a>
                   </li>
               </ul>
           </li>
@@ -238,21 +265,64 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <p><strong>Early Development Warning</strong></p>
-
-<p>Note that this API (and associated documentation) is in VERY early stages of development.  It should be expected that, as long as you see this message, that the API can, and will, change. You have been warned!</p>
+        <aside class="notice">
+<strong>Early Development Warning</strong> Note that this API (and associated documentation) is in VERY early stages of development.  It should be expected that, as long as you see this message, that the API can, and will, change. You have been warned!
+</aside>
 <h1 id='introduction'>Introduction</h1>
 <p>Welcome to the Loomis PlatformSync API!</p>
 
 <p>Our API comes in 2 flavors, Push API, and Pull API.</p>
-<h2 id='push-api'>Push API</h2>
+<h2 id='platformsync-push-api'>PlatformSync Push API</h2>
 <p>As its name implies, the Push API will push data into your API via REST endpoints provided by you.  This will enable near-real-time transactional data.</p>
-<h2 id='pull-api'>Pull API</h2>
+<h2 id='platformsync-pull-api'>PlatformSync Pull API</h2>
 <p>The Pull API will enable you to connect to our API REST service to query for transactional data.  You will also use this service to get data that was missed from the Push Service</p>
+<h1 id='push-api'>Push API</h1>
+<p>The Push API will push certain types of transactions to your supplied REST endpoints. We will send the transactions as soon as they occur on the safe and are processed by our system.</p>
+
+<p><strong>Setup</strong></p>
+
+<p>Right now, the setup for thie service is a manual process.  We have plans to integrate this into Loomis Direct, but at this time, we are not there yet.  To begin the setup process, you must communicate directly with our development teams who will perform the requisite setup on our systems.</p>
+<h2 id='urls'>URLs</h2>
+<p>You must provide a minimum of one REST endpoint for your data to be posted to.  You may also choose to provide a single endpoint for each type pf transaction (See &quot;Interested Transactions&quot; below).  The transactions will be sent as an HTTP POST.</p>
+<h2 id='security'>Security</h2>
+<p>Security should be implemented as a long-lived, unique API token.  We do not yet support security via OAuth or username/password.</p>
+
+<p>The token will be passed to your REST endpoint either in the body or as an <code>Authorization</code> header as a bearer token.</p>
+<h2 id='interested-transactions'>Interested Transactions</h2>
+<p>You may choose to receive any of the following types of transactions:</p>
+
+<ul>
+<li>End of Day</li>
+<li>End of Shift</li>
+<li>Validated Drop</li>
+<li>Change Purchase</li>
+<li>Servicing</li>
+</ul>
+
+<p>In addition, you may choose certain &quot;buffer&quot; points, where transactions are not sent to you until a certain type of transaction occurs.  For example, you may hold validated drops and servicings until an End of Day occurs, at which point all transactions that have not yet been sent will be sent along with the EOD transaction.</p>
+<h2 id='payload'>Payload</h2><pre class="highlight json tab-json"><code><span class="w">    </span><span class="p">{</span><span class="w">
+        </span><span class="err">count</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w">
+        </span><span class="err">remaining</span><span class="p">:</span><span class="w"> </span><span class="mi">2322</span><span class="p">,</span><span class="w">
+        </span><span class="err">start</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+        </span><span class="err">transactions</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w"> </span><span class="err">/*</span><span class="w"> </span><span class="err">Transaction</span><span class="w"> </span><span class="err">object</span><span class="w"> </span><span class="err">*/</span><span class="w"> </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>We will POST transactionsThe transactions will come in JSON format, and will follow consistent patterns.</p>
+
+<p>You should supply us with a desired size (in transaction count) of your payload.  We will default to 1,000 transactions at a time.</p>
+<h2 id='failure-notifications'>Failure Notifications</h2>
+<p>If we are unable to deliever your data after a predefined number of retries, we will notifiy the defined email addresses of the failure.  It will then be your responsiblity to get these failed transactions from the Pull API.</p>
+<h2 id='message-expiration'>Message Expiration</h2>
+<p>We will attempt to deliver your data on an interval for a period of 24 hours.</p>
+<h2 id='caveats'>Caveats</h2>
+<p>In the event of a failure, we will do our best to deliver recovered transactions in the same order in which they occured. However, your system should be resilient enough to handle out-of-order transactions.</p>
 
       </div>
       <div class="dark-box">
           <div class="lang-selector">
+                <a href="#" data-language-name="json">json</a>
                 <a href="#" data-language-name="http">http</a>
                 <a href="#" data-language-name="curl">curl</a>
           </div>
